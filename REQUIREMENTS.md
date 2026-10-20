@@ -16,7 +16,7 @@ The original project notes define the purpose. The decisions below resolve their
 
 ### Music Files and Metadata
 
-Supported formats are FLAC, MP3, AAC audio in M4A files, Ogg Vorbis, Ogg Opus, and AIFF. Other formats are outside the first release.
+Supported formats are FLAC, MP3, AAC audio in M4A files, Ogg Vorbis, Ogg Opus, and AIFF. Other formats are outside the first release. File renaming, moving, transcoding, and automatic cover art retrieval are outside the first release.
 
 Editable fields are title, artist, album, album artist, track number, track total, disc number, disc total, release date, genre, and front cover art. MusicBrainz recording and release identifiers are also stored fields. A date has the form YYYY, YYYY-MM, or YYYY-MM-DD.
 
@@ -58,6 +58,8 @@ Editable fields are title, artist, album, album artist, track number, track tota
 
 ### Collection Viewer and Filters
 
+Playback and unspecified viewer functions are outside the first release.
+
 - **FR-2.1** The system MUST show the current user's imported files with their stored fields, file paths, formats, and durations.
 - **FR-2.2** The system MUST let the current user browse the collection by artist, album, or track.
 - **FR-2.3** The system MUST let the current user search the collection by title, artist, or album text without regard to letter case.
@@ -69,6 +71,8 @@ Editable fields are title, artist, album, album artist, track number, track tota
 - **FR-2.9** The system MUST let the current user refresh an entry from its music file.
 
 ### Music Suggestions and Recommendations
+
+Prices, checkout, payment collection, affiliate tracking, and revenue features are outside the first release.
 
 A release is one MusicBrainz release identifier. A new release is a release absent from the current user's collection. Music tastes mean the collection's artists and genres; the first release has no separate taste profile.
 
@@ -117,18 +121,4 @@ The first-release acceptance platforms are Windows 11 24H2 on x64, macOS 15 on A
 
 ## Open Questions
 
-None remain from OQ-1 through OQ-13. The following decisions close those questions:
-
-- **OQ-1 — Resolved:** Add AAC in M4A, Ogg Vorbis, Ogg Opus, and AIFF to FLAC and MP3. Exclude other formats from the first release.
-- **OQ-2 — Resolved:** Import selected files or folders, including subfolders. Read tags, perform user-requested MusicBrainz searches, and write only approved changes. Do not rename, move, or transcode music files.
-- **OQ-3 — Resolved:** Use the fields defined under Music Files and Metadata. Users edit descriptive fields and local front cover art. MusicBrainz identifiers come from the selected match. Automatic cover art retrieval is outside the first release.
-- **OQ-4 — Resolved:** Require explicit match selection, including when only one candidate exists. Permit search correction for no matches and retry for service failures. Do not guess a match.
-- **OQ-5 — Resolved:** Approve or reject per field and file, with an additional action to approve all displayed changes for selected files. Rejection discards the proposal.
-- **OQ-6 — Resolved:** Save tags in the original files. Preserve audio and unrelated tags. Create recovery copies before writes, retain them until explicit deletion, and report failures per file with retry support.
-- **OQ-7 — Resolved:** Show stored fields, path, format, and duration. Include artist, album, and track views, text search, removal from the collection, and refresh from disk. Playback and other unspecified viewer functions are outside the first release.
-- **OQ-8 — Resolved:** Filter cover art by presence, type, and minimum dimensions. Use artist and genre for music tastes. Also filter by album, year, format, and MusicBrainz match status. Combine filters with AND.
-- **OQ-9 — Resolved:** New means absent from the collection by release identifier. Purchase suggestions use collection artists. Shared recommendations use libraries with at least one common release and rank candidates by occurrence count. Different editions remain distinct releases.
-- **OQ-10 — Resolved:** Provide Bandcamp search links with no availability guarantee. Prices, checkout, payment collection, affiliate tracking, and revenue features are outside the first release.
-- **OQ-11 — Resolved:** Use explicit, manual submissions of release identifiers to the recommendation service. Sharing is off by default. Withdrawal deletes the shared library. Do not expose other users' identities or complete libraries.
-- **OQ-12 — Resolved:** Local functions need no login. Shared recommendations require an account. Users control only their own data. Admins can suspend and restore service accounts, but cannot access local music files.
-- **OQ-13 — Resolved:** Test the first release on Windows 11 24H2 x64, macOS 15 Apple silicon, and Ubuntu 24.04 LTS x64. Other versions, distributions, and processor architectures have no first-release support commitment.
+None.
