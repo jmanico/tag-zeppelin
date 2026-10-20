@@ -61,11 +61,11 @@ components:
 
 ## Overview
 
-Behavior and workflows come only from [REQUIREMENTS.md](REQUIREMENTS.md). This document defines presentation, not additional product functions. This repository contains design documents and no application implementation. The product name is Tag Zeppelin. Use the existing teal tag mark, white canvas, ink text, and platform system typography as the first-release brand identity.
+[REQUIREMENTS.md](REQUIREMENTS.md) owns behavior and workflows; [ARCHITECTURE.md](ARCHITECTURE.md) owns frontend technology; [SECURITY.md](SECURITY.md) owns security controls. This document owns visual presentation and interaction design.
 
-Design decision: use a restrained, light desktop workspace for detailed collection review. The tokens, sizes, layout, and mark below are first-release design decisions made under the project owner's instruction to resolve the design questions; they are not facts supplied by the requirements. Favor legible metadata, explicit decisions, and visible per-file results for current users; keep Admin account actions distinct from collection work.
+The product name is Tag Zeppelin. Use a restrained, light desktop workspace for detailed collection review. Brand tokens are defined above; the primary mark is defined under Shapes.
 
-Format reference: [official DESIGN.md specification](https://github.com/google-labs-code/design.md/blob/main/docs/spec.md). Use its canonical prose sections and token schema.
+Format reference: [official DESIGN.md specification](https://github.com/google-labs-code/design.md/blob/main/docs/spec.md).
 
 ## Colors
 
@@ -85,7 +85,7 @@ Use the platform system interface font. Heading is for view titles; body is for 
 
 ## Layout
 
-Use a desktop navigation area and a main workspace. Group collection browsing, metadata review and recovery, discovery, and account sharing by the workflows in the requirements. Admin account actions appear in a separate, role-specific area. Use native Qt Widgets; web and mobile application UI are outside scope.
+Use a desktop navigation area and a main workspace. Group collection browsing, metadata review and recovery, discovery, and account sharing by the workflows in the requirements. Admin account actions appear in a separate, role-specific area. Frontend implementation is defined in OD-002 in [ARCHITECTURE.md](ARCHITECTURE.md); platform scope is NFR-1.4–NFR-1.5 in [REQUIREMENTS.md](REQUIREMENTS.md).
 
 Use lg for workspace margins, md between groups, sm between related controls, and xs between labels and helpers. Keep search and active filters adjacent to collection results. Show current and proposed metadata side by side when space permits; stack each labeled pair when space is limited. Keep file identity and approval actions associated with their values. Reflow controls before introducing horizontal scrolling; keep any necessary data scrolling within the collection region. The minimum supported content area is 1024 by 640 logical pixels, excluding operating-system window borders. At that size, stack current and proposed values and allow vertical scrolling so every field and approval action remains reachable. Validate collection, review, and confirmation layouts at this size with default text and with text enlarged to 200%; no text or action may be clipped or obscured. Smaller content areas have no first-release support commitment. These are acceptance targets, not claims of completed UI testing.
 
@@ -102,19 +102,15 @@ The primary mark in [logo.svg](logo.svg) is a teal tag silhouette with a white c
 ## Components
 
 - **Actions and fields:** Use one teal primary action per decision group. Secondary actions use ink text and outlines on white. Label every field; place validation text beside the affected field. Show format guidance for dates and positive integers from FR-1.20–FR-1.22. Hover underlines action text; pressed controls gain an inset outline in their permitted foreground color. Disabled controls retain contrast and include a reason.
-- **Collection and filters:** Use labeled artist, album, and track views. Rows expose the information in FR-2.1; a detail area holds long fields. Group only the specified filters, show active values and the AND relationship, and provide Clear all. Distinguish removing an entry from deleting a music file. Cover previews use square frames with the full image fitted inside, without cropping.
-- **Match selection:** Show search terms, candidate release and recording identity, and explicit selection. Separate no-match feedback with editable terms from request failure with Retry. Do not imply that a sole candidate is already selected (FR-1.13–FR-1.18).
-- **Metadata review:** Identify the file, field, Current value, and Proposed value. Show old and new cover previews. Use explicit Approve and Reject controls per field; visually separate the action to approve all displayed changes for selected files. Label pending, rejected, saved, and failed states in words. Show unchanged values without a change badge. Keep failed approved changes visible for retry (FR-1.4–FR-1.5, FR-1.23–FR-1.35).
-- **File results and recovery:** Use per-file result rows so one failure does not mask other results. Place the reason and available retry action beside the failure. A recovery choice identifies its file and copy; restoration confirmation names the selected copy. Use explicit deletion labels for recovery copies. Do not show a successful save when recovery-copy creation fails.
-- **Discovery:** Separate collection-based purchase suggestions from shared-library recommendations. Show artist, release title, and reason. Label purchase actions Search Bandcamp and state Availability unverified. Empty results show a reason; failed requests show Retry. Do not invent prices, availability, or other users' identities (FR-3.1–FR-3.9).
-- **Accounts and sharing:** Keep local work available without sign-in. Present sharing as off initially, show release identifiers before submission, and label an update as replacing the shared library. Separate withdrawal from account deletion; deletion confirmation states its effect on the shared library. Admin controls show account suspension or restoration, without a local-file view (FR-4.1–FR-4.15).
+- **Collection and filters:** Use labeled artist, album, and track views for FR-2.1–FR-2.9 in [REQUIREMENTS.md](REQUIREMENTS.md); a detail area holds long fields. Active filters use visible values and an AND label; the reset action is labeled Clear all. Make entry-removal wording distinct from file deletion. Cover previews use square frames with the full image fitted inside, without cropping; absent art uses a labeled empty frame.
+- **Match selection:** Present FR-1.13–FR-1.18 and FR-3.10 in [REQUIREMENTS.md](REQUIREMENTS.md) with visible search terms and candidate identities. Give no-match feedback and request-failure feedback distinct treatments; label the failure action Retry. A sole tagging candidate has no selected appearance until chosen.
+- **Metadata review:** Present FR-1.4–FR-1.5 and FR-1.23–FR-1.35 in [REQUIREMENTS.md](REQUIREMENTS.md) using file/field identity and Current value / Proposed value labels. Use Approve and Reject labels; visually separate group approval. Label pending, rejected, saved, and failed states in words. Show unchanged values without a change badge.
+- **File results and recovery:** Present FR-1.29–FR-1.34 and FR-1.41–FR-1.42 in [REQUIREMENTS.md](REQUIREMENTS.md) as per-file result rows with reasons and available retry actions adjacent. A recovery choice identifies its file and copy; restoration confirmation names the copy. Use explicit recovery-copy deletion labels.
+- **Discovery:** Present FR-3.1–FR-3.17 in [REQUIREMENTS.md](REQUIREMENTS.md) in separate purchase-suggestion and shared-recommendation areas. Label purchase actions Search Bandcamp and state Availability unverified; label failed-request actions Retry.
+- **Accounts and sharing:** Present FR-4.1–FR-4.27 in [REQUIREMENTS.md](REQUIREMENTS.md) with sharing state visible and updates labeled as replacement. Separate withdrawal from deletion; deletion confirmation states its effect on the shared library. Keep Admin actions in their role-specific area.
+- **Rendering:** Display metadata as plain text. Interpretation prevention is controlled by SC-002 in [SECURITY.md](SECURITY.md).
 - **Interaction and feedback:** All controls support keyboard operation with visible focus and meaningful names. Keep focus order aligned with reading order. Pair icons with words; announce validation and operation results to assistive technology. Keep error details visible until addressed. Do not use color or motion as the sole state signal.
 
-## Do's and Don'ts
+## Presentation constraints
 
-- Do preserve the distinction between proposed changes, approval, and saved results.
-- Do reuse the permitted color pairs for every text, boundary, icon, and focus state; verify rendered contrast as well as token contrast.
-- Do keep local workflows usable when network functions fail.
-- Don't add functions, fields, or filter categories beyond REQUIREMENTS.md.
-- Don't replace absent cover art with invented album artwork; use a labeled empty frame.
-- Don't use decorative motion, gradients, low-contrast placeholder text, or unlabeled icon actions.
+Verify rendered contrast as well as token contrast. Do not use decorative motion or low-contrast placeholder text. State distinctions, color pairs, and action labeling are defined in their sections above.
