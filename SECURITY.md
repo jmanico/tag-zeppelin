@@ -1,128 +1,80 @@
 # Secure Coding
 
-## Secure-Coding Inputs
+## Scope and authority
 
-- Read: `REQUIREMENTS.md`, `DESIGN.md`, and `ARCHITECTURE.md`. Existing `SECURITY.md`: absent; no prior SC or OD identifiers to preserve. Security notes: none supplied.
-- Authority: requirements own behavior, data, integrations, and obligations; design owns interaction and rendering; architecture owns components, interfaces, flows, and boundaries. Corpus guidance does not establish project facts.
-- Confirmed scope: a desktop music-tagging application with local file import, metadata review, explicit approval, recovery copies, MusicBrainz lookup, and Bandcamp search links. Local functions work without an account or network (`REQUIREMENTS.md`, FR-1.1–FR-1.35, FR-3.5–FR-3.6, FR-4.1, NFR-2.1).
-- Confirmed service scope: signed-in shared-library submissions and recommendations; optional sharing of release identifiers only; owner/Admin restrictions; withdrawal, account deletion, suspension, and protection of other users' identities and complete libraries (`REQUIREMENTS.md`, FR-4.2–FR-4.15).
-- Confirmed enforcement points: local application/domain services enforce approval and recovery; media and network adapters receive untrusted input; the recommendation API repeats validation, authentication, ownership, and role checks. The service has no access path to local media or catalog (`ARCHITECTURE.md`, “Components and Flows,” “Main flows and trust boundaries,” DR-1–DR-6).
-- Confirmed presentation: current/proposed values and cover previews, explicit approval and recovery confirmation, sharing preview, separate Admin controls, and visible per-file results (`DESIGN.md`, “Components”). Browser handoff is for Bandcamp search links (`ARCHITECTURE.md`, “APIs and integrations”); an application browser renderer is not confirmed.
-- Technology names supplied in `ARCHITECTURE.md`, “Required Architecture Inputs”: Node.js, Fastify, and QT. Versions are `UNKNOWN`. Runtime/framework labels conflict; the corrected interpretation is explicitly `PROPOSED`, not confirmed (OD-001).
-- C++, Qt Widgets, SQLite, TagLib, HTTPS JSON, password credentials, and opaque sessions are proposals, not adopted selections. Language versions, modules, plugins, toolchains, hosting, scale, and detailed security configuration are `UNKNOWN`. OPA and Docker adoption are `UNKNOWN` (OD-002–OD-007).
-- Applicable legal obligations are explicitly `UNKNOWN` (`REQUIREMENTS.md`, “Required Requirement Inputs”). Product privacy requirements are confirmed independently (OD-008).
-- `ARCHITECTURE.md`, “Open Questions,” retains unknowns and proposed decisions despite saying no questions remain. That wording does not confirm them. No requirements/design conflict was identified; the technology-label conflict remains unresolved here.
+REQUIREMENTS.md owns behavior and privacy scope; DESIGN.md owns native interaction; ARCHITECTURE.md owns implementation decisions. This document supplies project security controls for the native Qt desktop application and HTTPS recommendation API. The project maintainer owns review and release evidence. Rules below are adopted requirements, not claims of passing implementation tests.
 
-## Selected Prompts
+Local services enforce approval, recovery, and filesystem access. The API independently enforces authentication, ownership, roles, and release-only sharing. Admin status never grants access to desktop files. Bandcamp links open in the system browser; no browser renderer or mobile application is included.
 
-Corpus root: `/Users/jmanico/Dropbox/github/aegis/secure-coding-knowledge`. All corpus paths below are relative to this root. Candidate manifests, prompt text, source records, shared preamble, and resolver output were inspected. Corpus review versions describe the corpus, not this project or independently verified current releases.
+## Security guidance selection
 
-Direct selection evidence:
+Use the project controls below with the adopted Node.js 24 / Fastify 5 / JavaScript ES2022 and Qt 6.8 / C++17 baselines. No version-specific pack from the previously reviewed external `aegis/secure-coding-knowledge` corpus is selected. The candidate composition required different language/framework versions; selecting it would misrepresent applicability. These project controls stand independently of that corpus and do not claim its provenance.
 
-- `js/nodejs/26` — **TO BE DECIDED**, not selected. Node.js is named, but its role conflicts and version is `UNKNOWN` (`ARCHITECTURE.md`, “Required Architecture Inputs,” “Technology interpretation and scope”; OD-001).
-- `native/qt/6.11` — **TO BE DECIDED**, not selected. QT is named; version is `UNKNOWN`, and C++/Widgets are proposed (same architecture sections; OD-002).
-- `js/fastify/5.12` — **TO BE DECIDED**, not selected. Fastify is named; version is `UNKNOWN`, and the role interpretation remains proposed (same architecture sections; OD-001).
-- `policy/open-policy-agent/1.20` — **TO BE DECIDED**, not selected. No authoritative document confirms OPA, Rego, or a policy gateway. Its general-sounding candidate label does not make this an application-independent baseline (OD-004).
-- `infra/dockerfile/1` — **TO BE DECIDED**, not selected. Hosting is `UNKNOWN`; Dockerfile syntax 1, BuildKit, and Linux containers are not confirmed (`ARCHITECTURE.md`, “Required Architecture Inputs”; OD-005).
+| Former decision | Adopted resolution |
+| --- | --- |
+| OD-001: server roles and versions | Node.js 24 LTS runtime, Fastify 5 API framework; reject the candidate Node.js 26 composition. |
+| OD-002: native baseline | Qt 6.8 Widgets, C++17, explicit modules and platform toolchains in ARCHITECTURE.md; reject the Qt 6.11 / C++23 pack. |
+| OD-003: server language | JavaScript ES2022 modules; no TypeScript. ES2026 and TypeScript 7 packs do not apply. |
+| OD-004: policy engine | No OPA or Rego; authorization is enforced and tested in the service domain. |
+| OD-005: deployment | Ubuntu host, systemd, dedicated service user, no containers; Dockerfile pack does not apply. |
+| OD-006: credentials and transport | Adopt SC-005 below, including native credential storage and revocable sessions. |
+| OD-007: media and persistence | TagLib 2.x and separate SQLite 3.x stores; patch pins, preservation tests, and workload gates are mandatory before release. |
+| OD-008: obligations | Adopt the privacy controls and release-eligibility review in REQUIREMENTS.md and SC-008. Do not infer legal exemption or certification. |
+| OD-009: contradictory Fastify source record | Reject the candidate 5.12 pack and its inconsistent 5.12.5 floor as project authority. Use the chosen Fastify 5 patch’s upstream advisories and release evidence; the external corpus is not modified by this decision. |
 
-Eligible ordered composition: **empty**. No direct or transitive pack is `SELECTED`. Unconfirmed parent versions cannot supply active rules independently of their blocked children.
+## Secure-coding rules
 
-Preamble, listed separately: `content/preamble.md`, “Applying these prompts.” It provides application and verification guidance, not technology eligibility or substantive project controls. Its conflict-resolution guidance does not override the instruction to record unresolved conflicts. It is not used to manufacture implementation rules from ineligible packs.
+### SC-001 — Service boundary controls
 
-Resolved candidate composition below is a dependency audit only, **not an adopted composition**. Running `scripts/resolve_prompt.py` with the five candidates in their supplied order yields:
+- The API MUST validate bounded JSON request schemas, reject extra properties, and validate MusicBrainz release identifiers as UUIDs before domain processing. Schemas are application-owned, never client-supplied executable definitions.
+- Every protected operation MUST authenticate and recheck account status. Derive ownership from the session; deny cross-account access and require the Admin role for suspension/restoration. Parameterize SQL and authorize before mutation.
+- Enforce the payload, account, membership, pagination, and deadline limits in ARCHITECTURE.md. Return 400 for invalid payloads, 401 for absent/invalid sessions, 403 for forbidden operations, 413 for oversized bodies, and 429 with Retry-After for rate/capacity limits. Reject atomically without partial updates.
+- Permit at most 60 authenticated requests per minute per account and 10 sign-in attempts per minute per source IP and normalized username, tracked independently. Return generic authentication failures. Bound queued work and return 503 when saturated.
+- Verification: test missing, forged, expired, suspended, non-owner, and non-Admin sessions; malformed/oversized requests; injection strings; capacity boundaries; and response schemas that exclude other users’ identities and complete libraries. Trace: FR-4.3, FR-4.10–FR-4.15, DR-4–DR-5.
 
-1. **Transitive** `js/javascript/ES2026`: `content/js/javascript/ES2026/prompt.md`; `content/js/javascript/ES2026/sources.md`. Included by Node.js 26, Node.js 24, and TypeScript 7. ES2026 scope is unconfirmed (OD-003).
-2. **Direct** `js/nodejs/26`: `content/js/nodejs/26/prompt.md`; `content/js/nodejs/26/sources.md`. Declares ES2026. Project runtime version is unconfirmed (OD-001).
-3. **Transitive** `native/cpp/C++23`: `content/native/cpp/C++23/prompt.md`; `content/native/cpp/C++23/sources.md`. Included by Qt 6.11. C++ is proposed and C++23/toolchain adoption is unconfirmed (OD-002).
-4. **Direct** `native/qt/6.11`: `content/native/qt/6.11/prompt.md`; `content/native/qt/6.11/sources.md`. Declares C++23. The sources distinguish this application baseline from Qt's own language requirement; neither establishes project adoption (OD-002).
-5. **Transitive** `js/typescript/7`: `content/js/typescript/7/prompt.md`; `content/js/typescript/7/sources.md`. Included by Fastify 5.12; declares ES2026. TypeScript use and version are unconfirmed (OD-003).
-6. **Direct** `js/fastify/5.12`: `content/js/fastify/5.12/prompt.md`; `content/js/fastify/5.12/sources.md`. Declares Node.js 24 and TypeScript 7; project applicability is unresolved (OD-001, OD-003).
-7. **Direct** `policy/open-policy-agent/1.20`: `content/policy/open-policy-agent/1.20/prompt.md`; `content/policy/open-policy-agent/1.20/sources.md`. No parents; scope is OPA 1.20 and Rego v1, not generic authorization (OD-004).
-8. **Direct** `infra/dockerfile/1`: `content/infra/dockerfile/1/prompt.md`; `content/infra/dockerfile/1/sources.md`. No parents; scope is Dockerfile syntax 1 with BuildKit for Linux containers (OD-005).
+### SC-002 — Native input and rendering
 
-Additional transitive dependency inspected: `js/nodejs/24`, with `content/js/nodejs/24/prompt.md` and `content/js/nodejs/24/sources.md`; it declares ES2026. Fastify's standalone dependency order is ES2026 → Node.js 24 → TypeScript 7 → Fastify 5.12. The combined candidate resolver substitutes directly requested Node.js 26 for Node.js 24. This mechanical precedence is not evidence of project compatibility or approval; the mismatch remains **TO BE DECIDED** (OD-001). Each pack's include provenance is its adjacent `manifest.json`.
+- Treat imported files, metadata, cover images, and network responses as untrusted. Render metadata as plain text; do not interpret HTML, scripts, shell fragments, or format strings.
+- Validate numbers, dates, image type, decoded dimensions, and allocation sizes before use. Limit cover inputs to 20 MiB encoded and 40 million decoded pixels; reject oversized covers with a per-file error. Use checked arithmetic and RAII; fuzz media adapters and run address/undefined-behavior sanitizers in supported test builds.
+- Import only selected regular files or regular files beneath selected directories; do not recursively follow symlinks, junctions, or reparse points. Report skipped links. Check identity again before write and fail on path substitution or source changes.
+- Generate only HTTPS Bandcamp search URLs with encoded artist/title parameters and an allowlisted host. Hand them to the OS URL opener without a shell. Do not execute URLs or commands supplied by metadata.
+- Verification: malformed media, decompression/allocation limits, link traversal, swapped files, hostile text/URLs, keyboard access, and 200% text scaling on each acceptance platform. Trace: FR-1.20–FR-1.22, FR-3.5–FR-3.6, DESIGN.md.
 
-Source inconsistency: the Fastify source introduction states a 5.12.5 security floor, while a later paragraph records removing that floor. No floor is adopted here (OD-009).
+### SC-003 — Approved writes and recovery integrity
 
-## Secure-Coding Rules
+- The local domain MUST bind approval to the reviewed file identity, original content fingerprint, and exact field changes. Serialize writes per file and require renewed review after a source change.
+- Create and flush a complete recovery copy with owner-only permissions before modifying the original. Stage on the same filesystem as the original, verify audio and unapproved metadata preservation, and use the platform’s atomic replacement operation. Fail safely when replacement cannot preserve required permissions or integrity.
+- Persist operation state before replacement and reconcile interrupted operations from actual file contents on restart. Never report success before file and catalog reconciliation. Failed changes remain available for retry.
+- Restore only a confirmed, application-recorded recovery copy to its associated path; reject path substitution. Retain copies until explicit deletion. Recovery-copy failure cancels the write.
+- Verification: each supported format and stored field, disk-full/read-only conditions, crash injection before/after replacement, concurrent edits, retained copies, and restoration. Release requires unchanged audio and unapproved-field evidence for every supported format. Trace: FR-1.5, FR-1.23–FR-1.34, DR-3.
 
-No active rules have eligible substantive prompt provenance yet. Confirmed project requirements remain authoritative; these blocked coverage entries neither suspend those requirements nor introduce implementation instructions. Each entry awaits the identified facts and an eligible, applicable source before receiving an active rule and pass/fail verification.
+### SC-004 — Sharing and deletion
 
-**SC-001 — Service boundary controls**
-- **Status:** BLOCKED
-- **Dependency:** Confirmed server roles, versions, language scope, and eligible composition (OD-001, OD-003). Coverage: service-side validation, authentication, ownership/Admin enforcement, and private recommendation responses. Grounding: `REQUIREMENTS.md`, FR-4.3, FR-4.10–FR-4.15; `ARCHITECTURE.md`, “Main flows and trust boundaries,” DR-4–DR-5.
+- Sharing MUST start disabled. Construct an immutable previewed identifier set and submit only after explicit confirmation. No import, save, refresh, retry loop, or background task may silently submit a changed library.
+- Library replacement, withdrawal, and account deletion MUST be transactional. Report success only after commit. Deletion also revokes sessions; suspension revokes sessions and immediately excludes the account from recommendations.
+- Do not persist recommendation snapshots. Bind pagination to requester and membership revision, invalidate changed revisions, and recheck eligibility on each page. Never return withdrawn/suspended memberships through stale cursors.
+- Verification: exact preview/submission equality, extra-field rejection, transaction rollback, concurrent withdrawal/suspension during pagination, and immediate session revocation. Trace: FR-4.4–FR-4.9, FR-4.13–FR-4.14, DR-6.
 
-**SC-002 — Desktop input and rendering controls**
-- **Status:** BLOCKED
-- **Dependency:** Confirmed Qt version, language/toolchain, modules, and eligible native prompts (OD-002). Coverage: media and network input validation, metadata/cover rendering, and browser link handoff. Grounding: `REQUIREMENTS.md`, FR-1.20–FR-1.22, FR-3.5–FR-3.6; `DESIGN.md`, “Components”; `ARCHITECTURE.md`, “APIs and integrations,” “Main flows and trust boundaries.”
+### SC-005 — Credentials, sessions, and transport
 
-**SC-003 — Approved writes and recovery integrity**
-- **Status:** BLOCKED
-- **Dependency:** Eligible native sources and adopted media/persistence mechanisms with compatibility evidence (OD-002, OD-007). Coverage: approval enforcement, complete recovery copies, preservation of audio/unapproved tags, restoration confirmation, and interrupted writes. Grounding: `REQUIREMENTS.md`, FR-1.5, FR-1.23–FR-1.34; `ARCHITECTURE.md`, “Persistence and file integrity,” DR-3.
+- Hash passwords with Argon2id using at least 19 MiB memory, two iterations, parallelism one, and a unique random salt. Accept 15–128 Unicode characters without silent truncation; never store or log plaintext passwords. These hashing minima follow the [OWASP password-storage guidance](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).
+- Generate opaque session secrets from 32 cryptographically random bytes and store only their SHA-256 digests server-side. Send bearer tokens only in Authorization headers, never URLs. Expire sessions after 30 minutes idle or 24 hours absolute, whichever occurs first; sign-out, suspension, and deletion revoke them immediately. These lifetimes are project decisions informed by [OWASP session guidance](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html).
+- Store client tokens in Windows Credential Manager, macOS Keychain, or Linux Secret Service. If secure storage is unavailable, keep the token in memory only and require sign-in after restart. Never persist passwords. Provision the initial Admin through a local operator command; public registration cannot set roles.
+- Require TLS 1.2 or newer with certificate/hostname verification for service and metadata calls. Never disable verification or downgrade to plaintext. The operator owns API certificate renewal; failed verification ends the request. Do not forward credentials across redirects or origins.
+- Verification: stored hash inspection, invalid certificates, expired/revoked sessions, credential-store failure, restart behavior, role escalation, and secret-free logs. Trace: FR-4.2–FR-4.3 and ARCHITECTURE.md authentication decisions.
 
-**SC-004 — Sharing and deletion controls**
-- **Status:** BLOCKED
-- **Dependency:** Eligible client/service composition and adopted persistence interfaces (OD-001, OD-002, OD-003, OD-007). Coverage: confirmed release-only submissions, no automatic sharing, deletion before success, and exclusion of withdrawn/suspended libraries. Grounding: `REQUIREMENTS.md`, FR-4.4–FR-4.9, FR-4.13–FR-4.14; `ARCHITECTURE.md`, “Authentication, privacy, and recommendation rules,” DR-6.
+### SC-006 — Domain authorization
 
-**SC-005 — Credentials, sessions, and transport**
-- **Status:** BLOCKED
-- **Dependency:** Adopted authentication/session/transport design and eligible version-specific sources (OD-001, OD-002, OD-006). Grounding: `REQUIREMENTS.md`, FR-4.2–FR-4.3; proposed mechanisms in `ARCHITECTURE.md`, “Authentication, privacy, and recommendation rules,” and “Required Architecture Inputs.”
+OPA is not applicable. Implement deny-by-default owner/Admin checks in the service domain, including direct invocation paths outside HTTP handlers. Test every role/operation pair and ensure a hidden desktop control is never treated as an authorization decision. Trace: FR-4.11–FR-4.15, DR-5.
 
-**SC-006 — Policy-engine controls**
-- **Status:** BLOCKED
-- **Dependency:** Evidence of OPA adoption, version, and enforcement integration (OD-004). No confirmed project policy-engine component exists to enforce this candidate coverage.
+### SC-007 — Build and host controls
 
-**SC-007 — Container build controls**
-- **Status:** BLOCKED
-- **Dependency:** Confirmed container/build platform and applicable versions (OD-005). Hosting is `UNKNOWN`; desktop Linux support does not establish Linux container deployment.
+Container-specific controls are not applicable. Run the API as a dedicated non-root systemd user with write access only to its service database/state directory. Restrict inbound traffic to the HTTPS API. Pin dependencies and toolchains, verify artifact integrity, scan dependencies against upstream advisories, and record an SBOM. Block release for unmitigated applicable high/critical vulnerabilities. Test clean installation, upgrades, and rollback on each acceptance platform; verify package signatures/checksums and service filesystem restrictions. Trace: ARCHITECTURE.md build and deployment decisions.
 
-**SC-008 — Obligation-specific data controls**
-- **Status:** BLOCKED
-- **Dependency:** Documented applicable obligations and affected data, plus eligible supporting sources (OD-008). Grounding: `REQUIREMENTS.md`, “Required Requirement Inputs.” No legal retention period or assurance requirement is inferred.
+### SC-008 — Privacy and operational evidence
 
-## Open Security Decisions
-
-**OD-001 — Server roles, versions, and parent mismatch**
-- **Unresolved:** Role-label conflict is **TO BE DECIDED**; Node.js/Fastify versions are `UNKNOWN`. Evidence needed: authoritative confirmation of roles and versions, then source-backed applicability review of Fastify's Node.js 24 baseline versus candidate Node.js 26. Resolver precedence alone cannot resolve this.
-- **Affected:** SC-001, SC-004, SC-005; `js/nodejs/26`, `js/fastify/5.12`, transitive `js/nodejs/24`.
-- **Owner:** UNKNOWN.
-
-**OD-002 — Desktop framework and native baseline**
-- **Unresolved:** Qt version, language standard, toolchain, and modules are `UNKNOWN`; proposed C++/Widgets adoption is **TO BE DECIDED**. Evidence needed: authoritative selections and compatibility evidence for the documented Windows, macOS, and Ubuntu acceptance platforms. Optional Qt modules cannot be inferred.
-- **Affected:** SC-002–SC-005; `native/qt/6.11`, `native/cpp/C++23`.
-- **Owner:** UNKNOWN.
-
-**OD-003 — JavaScript and TypeScript applicability**
-- **Unresolved:** ES2026 target and TypeScript use/version are `UNKNOWN`. Evidence needed: authoritative server language/build selections and compatibility review. A manifest include is not confirmation that this project uses TypeScript 7.
-- **Affected:** SC-001, SC-004; `js/javascript/ES2026`, `js/typescript/7`, and Fastify composition eligibility.
-- **Owner:** UNKNOWN.
-
-**OD-004 — Policy engine applicability**
-- **Unresolved:** OPA/Rego adoption and version are `UNKNOWN`; selection is **TO BE DECIDED**. Evidence needed: an authoritative decision establishing applicability or non-applicability, and, if adopted, the policy interface and enforcement component. Existing owner/Admin requirements do not imply OPA.
-- **Affected:** SC-006; `policy/open-policy-agent/1.20`.
-- **Owner:** UNKNOWN.
-
-**OD-005 — Build and hosting applicability**
-- **Unresolved:** Hosting, containers, Dockerfile syntax, builder, and runtime versions are `UNKNOWN`. Evidence needed: authoritative deployment/build decisions establishing applicability or non-applicability and the platform scope for any selected container pack.
-- **Affected:** SC-007; `infra/dockerfile/1`.
-- **Owner:** UNKNOWN.
-
-**OD-006 — Authentication and transport mechanisms**
-- **Unresolved:** Passwords, opaque sessions, operating-system credential storage, and HTTPS JSON remain proposed; detailed controls are **TO BE DECIDED**. Evidence needed: adopted credential/session lifecycle, Admin provisioning, transport ownership, and interface contracts, with configuration requirements sufficient for testable controls. Limits and algorithms are not supplied here.
-- **Affected:** SC-005; credential, session, transport, and request-resource coverage in otherwise eligible client/server packs.
-- **Owner:** UNKNOWN.
-
-**OD-007 — Media and persistence mechanisms**
-- **Unresolved:** SQLite and TagLib adoption is **TO BE DECIDED**; versions and adapter compatibility are `UNKNOWN`. Evidence needed: adopted adapters/storage interfaces, supported-format preservation results, and recovery/interruption semantics sufficient to define observable checks. Account scale and response-size targets also remain `UNKNOWN`.
-- **Affected:** SC-003, SC-004; file, database, deletion, and resource-bound coverage. No additional technology pack is selected by inference.
-- **Owner:** UNKNOWN.
-
-**OD-008 — Applicable obligations**
-- **Unresolved:** Legal obligations are `UNKNOWN`. Evidence needed: requirements-level identification of applicable obligations and their data scope, or a documented determination that no additional obligations apply. Release-only sharing and explicit recovery-copy deletion already remain product requirements.
-- **Affected:** SC-008; obligation-specific retention, deletion, and assurance coverage.
-- **Owner:** UNKNOWN.
-
-**OD-009 — Fastify source-record inconsistency**
-- **Unresolved:** `content/js/fastify/5.12/sources.md` both asserts and records removal of a 5.12.5 floor. Resolution is **TO BE DECIDED**. Evidence needed: reconciled corpus provenance and verified supporting documentation for any eventual patch-dependent rule, after project version confirmation.
-- **Affected:** SC-001, SC-005; Fastify patch-specific coverage. This does not establish any project version.
-- **Owner:** UNKNOWN.
+- Treat account identifiers, release memberships, and security logs as personal data. Never upload audio, local paths, images, or unapproved metadata. Local catalog and recovery files use owner-only permissions.
+- Log operation type, result, time, and correlation ID; exclude passwords, bearer tokens, payload bodies, local paths, and complete libraries. Retain service security logs for 30 days and restrict access to operators. Alert on repeated authentication throttling (20 events in 5 minutes), failed deletion transactions, or certificate renewal failures through operator monitoring.
+- The closed pilot uses no persistent service database backups or recommendation caches, so committed account/library deletion leaves no application-managed backup copy. Enable SQLite secure deletion and checkpoint/truncate WAL after deletion before reporting success; on checkpoint failure report pending deletion and retry cleanup. This is logical application deletion, not a promise of forensic erasure on storage hardware. Do not enable provider snapshots without an adopted deletion/retention design. Local music recovery copies remain until explicit user deletion.
+- Before public launch, the maintainer MUST record deployment jurisdiction, processing basis, user notice, retention/deletion handling, and dependency-license obligations in the release evidence. This gate does not assert a legal determination or waive obligations during the pilot.
+- Verification: payload/log inspection, timed retention cleanup, account/library deletion including WAL cleanup, local recovery retention, and a completed release review. Trace: REQUIREMENTS.md privacy scope, FR-1.31, FR-4.7–FR-4.9, FR-4.14.

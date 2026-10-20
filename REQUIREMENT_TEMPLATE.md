@@ -1,9 +1,8 @@
+# Requirement Template - Native Desktop & API Applications
 
-# Requirement Template - Web, Mobile & API Applications
+Use one copy of this template for each atomic requirement. Scope is native Windows, macOS, and Linux desktop development and backend APIs. Web frontends, browser-rendered application UI, and mobile applications are excluded. Opening an external purchase link in the system browser is an integration handoff only.
 
-Use one copy of this template for each atomic requirement.
-
-Replace bracketed placeholders when authoring a requirement. Use `N/A` only when a field has been evaluated and is not applicable. Use `TO BE DECIDED` when the answer is unresolved.
+Replace bracketed placeholders when authoring a requirement. Use `N/A` only when a field has been evaluated and is not applicable. Resolve decisions in the owning requirement, architecture, or security document before approval. Record the chosen behavior and its rationale; do not retain open-question fields.
 
 Uppercase normative terms use BCP 14 semantics as defined by RFC 2119 and RFC 8174. Prefer `MUST`, `MUST NOT`, `SHOULD`, `SHOULD NOT`, and `MAY`. Split compound behavior into separate requirements.
 
@@ -32,14 +31,26 @@ Uppercase normative terms use BCP 14 semantics as defined by RFC 2119 and RFC 81
 
 ## Scope
 
-- **Applies To**: [Web Client | Mobile Client | Server-Side Application | API | Background Processing | External Integration | Multiple]
+- **Applies To**: [Native Desktop Application | Local Domain Service | Filesystem / Media Adapter | API Service | Background Worker | External Integration | Multiple]
 - **Components**: [Affected logical components using the names defined in `ARCHITECTURE.md`]
-- **Interfaces / Operations**: [Affected pages, screens, workflows, API operations, events, or commands]
+- **Interfaces / Operations**: [Affected native windows, dialogs, workflows, API methods and paths, events, or commands]
 - **Actors**: [Affected users, roles, service identities, administrators, or external systems]
 - **Preconditions**: [State that MUST exist before the behavior occurs, or `None`]
 - **Data Classification**: [Public | Internal | Confidential | Restricted | Multiple | N/A]
 - **Personal or Regulated Data**: [None | Personal Data | Sensitive Personal Data | Payment Account Data | Health Data | Financial Data | Other]
-- **Jurisdiction / Regulatory Scope**: [Established jurisdiction or regulatory scope, `N/A`, or `TO BE DECIDED`]
+- **Jurisdiction / Regulatory Scope**: [Documented jurisdiction, data scope, and release eligibility decision, or justified `N/A`]
+
+## Native Desktop and API Contract
+
+Use `N/A` for fields outside this requirement’s surface.
+
+- **Native Platform Matrix**: [Applicable acceptance OS versions, CPU architectures, compiler/framework baseline, packaging, and required OS permissions]
+- **Filesystem and Recovery**: [Selected-path access, symlink handling, concurrent modification detection, approval, recovery-copy creation, atomic replacement, and crash recovery behavior]
+- **Native Interaction**: [Keyboard and assistive-technology behavior, focus, scaling, UI-thread responsiveness, progress, and cancellation semantics]
+- **Offline Behavior**: [Local behavior without network or account; explicit network-dependent operations]
+- **API Contract**: [HTTP method/path, schema version, request/response schemas, status codes, and compatibility policy]
+- **API Access and Limits**: [Session/role/ownership enforcement, payload and rate limits, deadlines, pagination, retry and idempotency rules]
+- **OS Integration**: [Credential store, file dialogs, safe external URL handoff, process/IPC boundary, or `N/A`]
 
 ## Security Context
 
@@ -49,7 +60,7 @@ Uppercase normative terms use BCP 14 semantics as defined by RFC 2119 and RFC 81
 - **Abuse / Misuse Case**: [What an attacker, unauthorized actor, or compromised dependency may attempt, or `N/A`]
 - **Trust Boundary**: [Boundary at which untrusted data, identity assertions, commands, or responses enter a more trusted component]
 - **Untrusted Inputs or Assertions**: [Inputs, identity claims, authorization context, external responses, files, events, or other data that MUST NOT be trusted without verification]
-- **Authoritative Enforcement Point**: [Server-side component or other trusted boundary responsible for enforcing the requirement]
+- **Authoritative Enforcement Point**: [Local domain service for local operations, API service for remote operations, or other trusted boundary responsible for enforcing the requirement]
 - **Independent Verification**: [Validation or authorization performed independently of the originating client, actor, or external system]
 - **Zero Trust Relevance**: [Specific NIST SP 800-207 resource-access principle or section, or `N/A`. Do not use Zero Trust as a synonym for input validation.]
 
@@ -57,13 +68,15 @@ Uppercase normative terms use BCP 14 semantics as defined by RFC 2119 and RFC 81
 
 Only include mappings verified against the cited version of the standard. Do not guess control identifiers.
 
-Use `N/A` when a standard has been evaluated and does not apply. Use `TO BE DECIDED` when applicability or mapping has not yet been assessed.
+Use `N/A` when a standard has been evaluated and does not apply. Complete applicability assessment before approval; a standard mapping is not evidence that a control has been implemented.
+
+Apply ASVS only to relevant API/service controls; it is not a complete native-desktop security baseline. No AI-enabled product component is in the first-release scope.
 
 - **OWASP ASVS 5.0.0**: [Versioned requirement ID, e.g., `v5.0.0-1.2.5`, or `N/A`]
 - **OWASP AISVS 1.0**: [Requirement ID when an AI-enabled component is involved, or `N/A`]
 - **NIST SP 800-53 Rev. 5**: [Control or control-enhancement ID and the catalog release used, or `N/A`]
 - **NIST SP 800-207**: [Specific Zero Trust tenet or section when applicable, or `N/A`]
-- **Regulatory**: [Applicable regulation, exact version or effective date, and specific requirement or section; otherwise `N/A` or `TO BE DECIDED`]
+- **Regulatory**: [Applicable regulation, exact version or effective date, and specific requirement or section; otherwise justified `N/A`]
 - **Other**: [Versioned RFC, ISO/IEC standard, industry standard, or organizational policy and exact section, or `N/A`]
 - **Mapping Basis**: [Brief explanation of why each listed mapping applies]
 
@@ -103,7 +116,7 @@ Use Given/When/Then or an equally explicit pass/fail form.
 - **Compliance Tests / Evidence**: [Automated or manual evidence required for an applicable obligation, or `N/A`]
 - **Acceptance-Criteria Traceability**: [Test identifier or test suite covering each `AC-*` criterion]
 - **Coverage Target**: [Project-defined target. All security-critical decisions and error paths MUST include positive and negative test coverage.]
-- **Required Test Environment**: [Fixtures, identities, roles, dependency simulators, configuration, or test data required]
+- **Required Test Environment**: [Acceptance OS/architecture matrix, native accessibility tools, filesystem fault injection, API fixtures, identities, roles, dependency simulators, configuration, or test data required]
 
 ## Dependencies
 
@@ -120,5 +133,6 @@ Use Given/When/Then or an equally explicit pass/fail form.
 - **Implementation Guidance**: [Non-normative guidance that does not add or alter required behavior]
 - **AI Development Guidance**: [Applicable prompt-library files, repository instructions, secure-coding rules, and mandatory human-review gates, or `N/A`]
 - **Required Human Review**: [Security, privacy, architecture, legal, product, or domain reviewers required before approval or release]
-- **Open Decisions**: [Unresolved decisions that prevent approval or implementation, or `None`]
+- **Decision Basis**: [Adopted decision, rationale, owner, and traceability to the authoritative document]
+- **Release Evidence**: [Required implementation evidence and measurable release gates; do not claim unexecuted checks passed]
 
