@@ -10,7 +10,7 @@ The original project notes define the purpose. The decisions below resolve their
 - Business objects / data entities: Music files, metadata, cover art, collections, accounts, shared release identifiers, recommendations, purchase suggestions, and recovery copies.
 - External integrations: MusicBrainz for metadata; the application recommendation service for shared library data; Bandcamp search links for purchase suggestions.
 - Authentication / roles: Local functions need no account. Shared recommendations require a signed-in account. Current users control their own data. Admins manage recommendation-service accounts.
-- Regulatory or privacy constraints: Applicable legal obligations: UNKNOWN. Product privacy requirements: sharing is optional; share only release identifiers; permit withdrawal and deletion; do not share audio, file paths, or cover art.
+- Regulatory or privacy constraints: Release scope: local desktop distribution and an operator-run closed recommendation-service pilot. Treat account identifiers, release memberships, and security logs as personal data. Public service launch requires a recorded jurisdiction, lawful-processing, notice, deletion, and dependency-license review owned by the project maintainer; no compliance certification is claimed. Product privacy requirements: sharing is optional; share only release identifiers; permit withdrawal and deletion; do not share audio, file paths, or cover art.
 
 ## Functional Requirements
 
@@ -113,12 +113,9 @@ The first-release acceptance platforms are Windows 11 24H2 on x64, macOS 15 on A
 - **NFR-1.1** The system MUST provide all applicable desktop functions on the specified Windows acceptance platform.
 - **NFR-1.2** The system MUST provide all applicable desktop functions on the specified macOS acceptance platform.
 - **NFR-1.3** The system MUST provide all applicable desktop functions on the specified Linux acceptance platform.
-- **NFR-1.4** The system MUST limit supported user interface platforms to Windows, macOS, and Linux.
+- **NFR-1.4** The system MUST limit supported user interface platforms to native Windows, macOS, and Linux desktop applications.
+- **NFR-1.5** The system MUST NOT provide a web frontend, embedded browser application UI, or mobile application. External Bandcamp search links remain system-browser handoffs.
 
 ### Offline Operation
 
 - **NFR-2.1** The system MUST permit local import, viewing, filtering, manual editing, and recovery without a network connection.
-
-## Open Questions
-
-None.
