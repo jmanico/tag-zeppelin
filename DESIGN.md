@@ -1,6 +1,6 @@
 ---
 version: alpha
-name: Music Tagging Application
+name: Tag Zeppelin
 description: A quiet desktop workspace for collection review and explicit metadata approval.
 colors:
   primary: "#005A50"
@@ -61,11 +61,11 @@ components:
 
 ## Overview
 
-Behavior and workflows come only from [REQUIREMENTS.md](REQUIREMENTS.md). This document defines presentation, not additional product functions. Existing implementation: UNKNOWN; assume none for this design. Approved brand identity: UNKNOWN.
+Behavior and workflows come only from [REQUIREMENTS.md](REQUIREMENTS.md). This document defines presentation, not additional product functions. Existing implementation: UNKNOWN; assume none for this design. The product name is Tag Zeppelin. Use the existing teal tag mark, white canvas, ink text, and platform system typography as the first-release brand identity.
 
-ASSUMPTION: a restrained, light desktop workspace suits detailed collection review. The tokens, sizes, layout, and mark below are proposed design choices, not values supplied by the requirements. Favor legible metadata, explicit decisions, and visible per-file results for current users; keep Admin account actions distinct from collection work.
+Design decision: use a restrained, light desktop workspace for detailed collection review. The tokens, sizes, layout, and mark below are first-release design decisions made under the project owner's instruction to resolve the design questions; they are not facts supplied by the requirements. Favor legible metadata, explicit decisions, and visible per-file results for current users; keep Admin account actions distinct from collection work.
 
-Format reference: [official DESIGN.md specification](https://github.com/google-labs-code/design.md/blob/main/docs/spec.md). Use its canonical prose sections and token schema; Open Questions is an extension section.
+Format reference: [official DESIGN.md specification](https://github.com/google-labs-code/design.md/blob/main/docs/spec.md). Use its canonical prose sections and token schema.
 
 ## Colors
 
@@ -87,7 +87,7 @@ Use the platform system interface font. Heading is for view titles; body is for 
 
 Use a desktop navigation area and a main workspace. Group collection browsing, metadata review and recovery, discovery, and account sharing by the workflows in the requirements. Admin account actions appear in a separate, role-specific area. No mobile workflow is specified.
 
-Use lg for workspace margins, md between groups, sm between related controls, and xs between labels and helpers. Keep search and active filters adjacent to collection results. Show current and proposed metadata side by side when space permits; stack each labeled pair when space is limited. Keep file identity and approval actions associated with their values. Reflow controls before introducing horizontal scrolling; keep any necessary data scrolling within the collection region. Minimum supported window size: TO BE DECIDED (DQ-2).
+Use lg for workspace margins, md between groups, sm between related controls, and xs between labels and helpers. Keep search and active filters adjacent to collection results. Show current and proposed metadata side by side when space permits; stack each labeled pair when space is limited. Keep file identity and approval actions associated with their values. Reflow controls before introducing horizontal scrolling; keep any necessary data scrolling within the collection region. The minimum supported content area is 1024 by 640 logical pixels, excluding operating-system window borders. At that size, stack current and proposed values and allow vertical scrolling so every field and approval action remains reachable. Validate collection, review, and confirmation layouts at this size with default text and with text enlarged to 200%; no text or action may be clipped or obscured. Smaller content areas have no first-release support commitment. These are acceptance targets, not claims of completed UI testing.
 
 ## Elevation & Depth
 
@@ -95,9 +95,9 @@ Use flat white surfaces, ink outlines, spacing, and headings to establish groups
 
 ## Shapes
 
-Use sm corners for controls and md for review groups. Use simple outlined icons with text labels for actions. Controls have a proposed minimum target of 32 by 32 logical pixels. Focus uses a 2-pixel teal outline separated from the control by a 2-pixel white gap, so it never depends on teal-to-ink contrast.
+Use sm corners for controls and md for review groups. Use simple outlined icons with text labels for actions. Controls have a minimum target of 32 by 32 logical pixels. Focus uses a 2-pixel teal outline separated from the control by a 2-pixel white gap, so it never depends on teal-to-ink contrast.
 
-The primary mark in [logo.svg](logo.svg) is a teal tag silhouette with a white circular hole. It represents tagging without implying playback. Use it on the white surface, with clear space of one eighth of its displayed width. Preserve its aspect ratio. Verify its silhouette and hole at 16, 32, and 128 pixels. No wordmark or external font is required. Approved product name and brand direction: TO BE DECIDED (DQ-1).
+The primary mark in [logo.svg](logo.svg) is a teal tag silhouette with a white circular hole. It represents tagging without implying playback. Use it on the white surface, with clear space of one eighth of its displayed width. Preserve its aspect ratio. Verify its silhouette and hole at 16, 32, and 128 pixels. No wordmark or external font is required. Use Tag Zeppelin as the accessible product name when the mark identifies the application; the tag remains the sole primary visual mark.
 
 ## Components
 
@@ -118,8 +118,3 @@ The primary mark in [logo.svg](logo.svg) is a teal tag silhouette with a white c
 - Don't add functions, fields, or filter categories beyond REQUIREMENTS.md.
 - Don't replace absent cover art with invented album artwork; use a labeled empty frame.
 - Don't use decorative motion, gradients, low-contrast placeholder text, or unlabeled icon actions.
-
-## Open Questions
-
-- **DQ-1** Approved product name and brand identity are UNKNOWN. Approval of the proposed tag mark and visual direction is TO BE DECIDED.
-- **DQ-2** Minimum supported desktop window dimensions are TO BE DECIDED; validate the collection and review layouts at that size before implementation acceptance.
