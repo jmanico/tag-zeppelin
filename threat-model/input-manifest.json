@@ -1,0 +1,76 @@
+{
+  "source_revision": "e346ef231f549b15ead023bcfbea44ac4e69e59a",
+  "analysis_date": "2026-10-20",
+  "pipeline_files": [
+    {
+      "name": "README.md",
+      "sha256": "2f3de0a0dcf9841b925814844788cde12dec063002a50cf82e540c859edfb308"
+    },
+    {
+      "name": "00-stride-analyzer.md",
+      "sha256": "0ef7a48cfa717a8ff19cca7f071828488f7dc4ae867c1a838b073536c038d3b9"
+    },
+    {
+      "name": "01-pasta-analyzer.md",
+      "sha256": "b370b7a2e85576e296dc7e418d1dd785ba8f8d5e730f08a048be42edd6922b45"
+    },
+    {
+      "name": "02-linddun-analyzer.md",
+      "sha256": "c8d7e99fc160a94bd44ce0f18a61ac083a63ad8abbab39bf8e5ba6f54cd81a10"
+    },
+    {
+      "name": "03-attack-tree-analyzer.md",
+      "sha256": "7e6cdc4fafec39e0fec8b922cdec585a774d98f813959f02cee5b834057d70c0"
+    },
+    {
+      "name": "04-fmea-analyzer.md",
+      "sha256": "f388ac433ba9d40cf69e6b5f26bce596c602813cc97d0169e02bf5e8f6802150"
+    },
+    {
+      "name": "05-ai-ml-analyzer.md",
+      "sha256": "0a0af8742c95fc7d26f0b4d641270c20f385c59558b1eeff355480c003e16079"
+    },
+    {
+      "name": "06-repository-reconnaissance.md",
+      "sha256": "db27d2cfce0387bfe81b59e5a68fed7b21fb44044b2dc0fa98ee6c6af7340eac"
+    },
+    {
+      "name": "07-document-absorption.md",
+      "sha256": "fb66fab1053fe1f1ffaa6b85057c121aea6663eeccdc4554d1de5ed7ec088bb4"
+    },
+    {
+      "name": "08-consolidator.md",
+      "sha256": "6bfa1de0dc8377cfbaa89ebe4a5ab2b0b930236f41ee3d551a1a390efbab1742"
+    },
+    {
+      "name": "09-diagram-generator.md",
+      "sha256": "5915342660606c9ac3459c87ba623f45cb86dc95708de0c2e3045b3662c432c1"
+    },
+    {
+      "name": "10-visual-design-converter.md",
+      "sha256": "c5808b18d1cc997b93fccaddda6bcd2c46c43868fdaf46e027dad13b108301d1"
+    },
+    {
+      "name": "11-report-generator.md",
+      "sha256": "8b04c6d2df15749f2dd3ecfee9487dba526c9d42b432e349fce0792b8f871cc1"
+    }
+  ],
+  "specifications": [
+    {
+      "path": "REQUIREMENTS.md",
+      "sha256": "6ac21fb401558ddae902dd81230bf675dbc02b8b383db86b6e02b86b9b0e0029"
+    },
+    {
+      "path": "ARCHITECTURE.md",
+      "sha256": "000bd43a31c38c63b36d556dd1f7148d3212e35906f457371cc05b26eee38960"
+    },
+    {
+      "path": "SECURITY.md",
+      "sha256": "f460864968e8970108d7264ec4c1b022e7483c7d7f312e6de6d99a2ea72fb9ca"
+    },
+    {
+      "path": "DESIGN.md",
+      "sha256": "30653ec882094211e96bf5a9bd22acb6b9bddab27320b2c3e1a3290282eec423"
+    }
+  ]
+}
