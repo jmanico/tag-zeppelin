@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="logo-title">
+  <title id="logo-title">Music tagging application — tag mark</title>
+  <path fill="#005A50" d="M8 8h27l23 23a5 5 0 0 1 0 7L38 58a5 5 0 0 1-7 0L8 35Z"/>
+  <circle cx="21" cy="21" r="5" fill="#FFFFFF"/>
+</svg>
